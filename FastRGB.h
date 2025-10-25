@@ -1,4 +1,5 @@
 #include "color.hh"
 #include "ledpin.hh"
 #include "ledseries.hh"
+#include "effect/meta.hh"
 #include "slice/slice.hh"

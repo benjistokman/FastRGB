@@ -12,12 +12,12 @@ class LEDPin {
 		/** Stores the colors in this ledpin */
 		Slice<Color> leds;
 		
-		/** What digital pin to write to */
-		unsigned short pin;
+		/** What pin to output on */
+		unsigned pin;
 		
 	public:
 		/** Constructor to initialize the pin */
-		LEDPin(Slice<Color> leds, unsigned short pin);
+		LEDPin(Slice<Color> leds, unsigned pin);
 		// No destructor needed as this class is memory safe
 		
 		void writeByte(unsigned char byte) const;

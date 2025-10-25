@@ -14,8 +14,9 @@ class Slice {
 		std::shared_ptr<SliceArray<T>> parentArray = nullptr;
 		/** Stores a pointer to the base of the slice */
 		T * array = nullptr;
-		/** Length of s;oced array */
+		/** Length of slice */
 		unsigned arrayLength = 0;
+		/** If this slice is valid */
 		bool valid = false;
 		
 	public:
@@ -29,10 +30,10 @@ class Slice {
 			this->valid = true;
 		}
 		
-		/** Invalid slice */
+		/** Invalid */
 		Slice() {}
 		
-		/** Slice specifying all fields */
+		/** Slice specifying all fields (used for copying) */
 		Slice(
 			std::shared_ptr<SliceArray<T>> parentArray,
 			T * array,
@@ -46,8 +47,9 @@ class Slice {
 		}
 		
 		/** Get slice of this array */
-		Slice slice(unsigned start, unsigned length) {
+		Slice<T> slice(unsigned start, unsigned length) {
 			if (start + length > this->arrayLength) {return Slice();}
+			
 			return Slice(
 				this->parentArray,
 				this->array + start,
