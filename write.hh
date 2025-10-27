@@ -4,39 +4,44 @@
 #include "slice/slice.hh"
 
 namespace FastRGB {
-	
-template <unsigned pin> inline void setBit() {}
-template <unsigned pin> inline void unsetBit() {}
 
-template <> inline void setBit<0>() {PORTD |= 1;}
-template <> inline void unsetBit<0>() {PORTD &= ~1;}
-template <> inline void setBit<1>() {PORTD |= 2;}
-template <> inline void unsetBit<1>() {PORTD &= ~2;}
-template <> inline void setBit<2>() {PORTD |= 4;}
-template <> inline void unsetBit<2>() {PORTD &= ~4;}
-template <> inline void setBit<3>() {PORTD |= 8;}
-template <> inline void unsetBit<3>() {PORTD &= ~8;}
-template <> inline void setBit<4>() {PORTD |= 16;}
-template <> inline void unsetBit<4>() {PORTD &= ~16;}
-template <> inline void setBit<5>() {PORTD |= 32;}
-template <> inline void unsetBit<5>() {PORTD &= ~32;}
-template <> inline void setBit<6>() {PORTD |= 64;}
-template <> inline void unsetBit<6>() {PORTD &= ~64;}
-template <> inline void setBit<7>() {PORTD |= 128;}
-template <> inline void unsetBit<7>() {PORTD &= ~128;}
+template <unsigned pin>
+inline void setBit() {
+	// Note: the compiler will evaluate these constant expressions at compile
+	// time, and will take out all the irrelevant conditional code
+	if (pin == 0) {PORTD |= 1;}
+	else if (pin == 1) {PORTD |= 2;}
+	else if (pin == 2) {PORTD |= 4;}
+	else if (pin == 3) {PORTD |= 8;}
+	else if (pin == 4) {PORTD |= 16;}
+	else if (pin == 5) {PORTD |= 32;}
+	else if (pin == 6) {PORTD |= 64;}
+	else if (pin == 7) {PORTD |= 128;}
+	else if (pin == 8) {PORTB |= 1;}
+	else if (pin == 9) {PORTB |= 2;}
+	else if (pin == 10) {PORTB |= 4;}
+	else if (pin == 11) {PORTB |= 8;}
+	else if (pin == 12) {PORTB |= 16;}
+	else if (pin == 13) {PORTB |= 32;}
+}
 
-template <> inline void setBit<8>() {PORTB |= 1;}
-template <> inline void unsetBit<8>() {PORTB &= ~1;}
-template <> inline void setBit<9>() {PORTB |= 2;}
-template <> inline void unsetBit<9>() {PORTB &= ~2;}
-template <> inline void setBit<10>() {PORTB |= 4;}
-template <> inline void unsetBit<10>() {PORTB &= ~4;}
-template <> inline void setBit<11>() {PORTB |= 8;}
-template <> inline void unsetBit<11>() {PORTB &= ~8;}
-template <> inline void setBit<12>() {PORTB |= 16;}
-template <> inline void unsetBit<12>() {PORTB &= ~16;}
-template <> inline void setBit<13>() {PORTB |= 32;}
-template <> inline void unsetBit<13>() {PORTB &= ~32;}
+template <unsigned pin>
+inline void unsetBit() {
+	if (pin == 0) {PORTD &= ~1;}
+	else if (pin == 1) {PORTD &= ~2;}
+	else if (pin == 2) {PORTD &= ~4;}
+	else if (pin == 3) {PORTD &= ~8;}
+	else if (pin == 4) {PORTD &= ~16;}
+	else if (pin == 5) {PORTD &= ~32;}
+	else if (pin == 6) {PORTD &= ~64;}
+	else if (pin == 7) {PORTD &= ~128;}
+	else if (pin == 8) {PORTB &= ~1;}
+	else if (pin == 9) {PORTB &= ~2;}
+	else if (pin == 10) {PORTB &= ~4;}
+	else if (pin == 11) {PORTB &= ~8;}
+	else if (pin == 12) {PORTB &= ~16;}
+	else if (pin == 13) {PORTB &= ~32;}
+}
 
 template <unsigned pin>
 void writeByte(unsigned char byte) {
@@ -62,33 +67,32 @@ void writeByte(unsigned char byte) {
 }
 
 template <unsigned pin>
-bool write(Slice<Color> leds) {
+bool write(unsigned char * bytes, unsigned bytesLength) {
 	cli();
-	// Per color
-	for (unsigned i = 0; i < leds.length(); i ++) {
-		writeByte<pin>(leds[i].green);
-		writeByte<pin>(leds[i].red);
-		writeByte<pin>(leds[i].blue);
+	for (unsigned i = 0; i < bytesLength; i ++) {
+		writeByte<pin>(bytes[i]);
 	}
-	delayMicroseconds(50);
+	// Delay to help ensure that the led strip will reset its state for reading
+	// next message
+	delayMicroseconds(20);
 	sei();
 }
 
-bool writeMultiplex(Slice<Color> leds, unsigned pin) {
+bool writeMultiplex(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
 	switch (pin) {
-		case 1: write<1>(leds);
-		case 2: write<2>(leds);
-		case 3: write<3>(leds);
-		case 4: write<4>(leds);
-		case 5: write<5>(leds);
-		case 6: write<6>(leds);
-		case 7: write<7>(leds);
-		case 8: write<8>(leds);
-		case 9: write<9>(leds);
-		case 10: write<10>(leds);
-		case 11: write<11>(leds);
-		case 12: write<12>(leds);
-		case 13: write<13>(leds);
+		case 1: write<1>(bytes, bytesLength);
+		case 2: write<2>(bytes, bytesLength);
+		case 3: write<3>(bytes, bytesLength);
+		case 4: write<4>(bytes, bytesLength);
+		case 5: write<5>(bytes, bytesLength);
+		case 6: write<6>(bytes, bytesLength);
+		case 7: write<7>(bytes, bytesLength);
+		case 8: write<8>(bytes, bytesLength);
+		case 9: write<9>(bytes, bytesLength);
+		case 10: write<10>(bytes, bytesLength);
+		case 11: write<11>(bytes, bytesLength);
+		case 12: write<12>(bytes, bytesLength);
+		case 13: write<13>(bytes, bytesLength);
 	}
 }
 

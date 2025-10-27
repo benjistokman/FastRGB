@@ -1,2 +1,2 @@
 #include "effect.hh"
-#include "effect-test.hh"
+#include "effect-rainbow.hh"

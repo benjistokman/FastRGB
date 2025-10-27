@@ -9,7 +9,11 @@ namespace FastRGB {
 
 class Effect {
 	public:
-		virtual bool next(Slice<Color> current, unsigned char hue);
+		/** Updates the data in the Slice of Color objects */
+		virtual void next(Slice<Color> current);
+		/** Increments some arbitrary state in the effect */
+		virtual void tick();
+		
 		virtual ~Effect() {};
 };
 
