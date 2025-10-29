@@ -48,11 +48,11 @@ class EffectRainbow : public Effect {
 		}
 		
 	public:
-		void next(Slice<Color> current) {
+		void next(Slice<Color> leds) {
 			unsigned char hueTemp = this->hue;
-			for (int i = 0; i < current.length(); i ++) {
-				current[i] = this->hslToRGB(hueTemp, 255, 100);
-				hueTemp += this->hueLEDInc;
+			for (int i = 0; i < leds.length(); i ++) {
+				leds[i] = this->hslToRGB(hueTemp, 255, 100);
+				hueTemp -= this->hueLEDInc;
 			}
 		}
 		
