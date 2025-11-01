@@ -1,6 +1,8 @@
 # Fast addressable RGB library
 
-Currently in beta & only compatible with AVR boards
+Currently in beta.
+
+Compatible with Arduino uno and nano boards, revisions 1 through 4.
 
 ## Example
 

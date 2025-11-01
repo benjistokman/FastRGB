@@ -1,9 +1,9 @@
 #pragma once
 
-#include "color.hh"
-#include "slice/slice.hh"
-
 namespace FastRGB {
+
+/// Arduino Uno or Nano
+#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_NANO328)
 
 template <unsigned pin>
 inline void setBit() {
@@ -67,7 +67,7 @@ void writeByte(unsigned char byte) {
 }
 
 template <unsigned pin>
-bool write(unsigned char * bytes, unsigned bytesLength) {
+bool writeTemplated(unsigned char * bytes, unsigned bytesLength) {
 	cli();
 	for (unsigned i = 0; i < bytesLength; i ++) {
 		writeByte<pin>(bytes[i]);
@@ -78,22 +78,52 @@ bool write(unsigned char * bytes, unsigned bytesLength) {
 	sei();
 }
 
-bool writeMultiplex(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
+bool write(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
 	switch (pin) {
-		case 1: write<1>(bytes, bytesLength);
-		case 2: write<2>(bytes, bytesLength);
-		case 3: write<3>(bytes, bytesLength);
-		case 4: write<4>(bytes, bytesLength);
-		case 5: write<5>(bytes, bytesLength);
-		case 6: write<6>(bytes, bytesLength);
-		case 7: write<7>(bytes, bytesLength);
-		case 8: write<8>(bytes, bytesLength);
-		case 9: write<9>(bytes, bytesLength);
-		case 10: write<10>(bytes, bytesLength);
-		case 11: write<11>(bytes, bytesLength);
-		case 12: write<12>(bytes, bytesLength);
-		case 13: write<13>(bytes, bytesLength);
+		case 1: writeTemplated<1>(bytes, bytesLength);
+		case 2: writeTemplated<2>(bytes, bytesLength);
+		case 3: writeTemplated<3>(bytes, bytesLength);
+		case 4: writeTemplated<4>(bytes, bytesLength);
+		case 5: writeTemplated<5>(bytes, bytesLength);
+		case 6: writeTemplated<6>(bytes, bytesLength);
+		case 7: writeTemplated<7>(bytes, bytesLength);
+		case 8: writeTemplated<8>(bytes, bytesLength);
+		case 9: writeTemplated<9>(bytes, bytesLength);
+		case 10: writeTemplated<10>(bytes, bytesLength);
+		case 11: writeTemplated<11>(bytes, bytesLength);
+		case 12: writeTemplated<12>(bytes, bytesLength);
+		case 13: writeTemplated<13>(bytes, bytesLength);
 	}
 }
+
+#elif defined(ARDUINO_ARCH_RENESAS)
+	bool write(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
+		uint16_t mask = digitalPinToBitMask(pin);
+		uint8_t port = digitalPinToPort(pin);
+		volatile uint16_t * portx_p = portOutputRegister(port);
+		
+		noInterrupts();
+		for (unsigned i = 0; i < bytesLength; i ++) {
+			for (unsigned char bitMask = 0x80; bitMask > 0; bitMask = (bitMask >> 1)) {
+				if ((bytes[i] & bitMask) != 0) {
+					*portx_p |= mask;
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t");
+					*portx_p &= ~mask;
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+				} else {
+					*portx_p |= mask;
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					*portx_p &= ~mask;
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t");
+				}
+			}
+		}
+		interrupts();
+	}
+#endif
 
 } // end namespace FastRGB

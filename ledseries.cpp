@@ -23,7 +23,7 @@ bool LEDSeries::updateLED(Color newColor, unsigned index) {
 	return true;
 }
 
-bool LEDSeries::update(const Slice<Color> & newLEDs) {
+bool LEDSeries::update(Slice<Color> & newLEDs) {
 	if (this->getNumLEDs() != newLEDs.length()) {return false;}
 	
 	for (unsigned i = 0; i < this->getNumLEDs(); i ++) {

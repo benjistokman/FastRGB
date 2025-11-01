@@ -47,7 +47,7 @@ class Slice {
 		}
 		
 		/** Get slice of this array */
-		Slice<T> slice(unsigned start, unsigned length) {
+		Slice<T> slice(unsigned start, unsigned length) const {
 			if (start + length > this->arrayLength) {return Slice();}
 			
 			return Slice(
@@ -59,12 +59,12 @@ class Slice {
 		}
 		
 		/** Returns length of array */
-		unsigned length() {return this->arrayLength;}
+		unsigned length() const {return this->arrayLength;}
 		/** Returns if this slice object points to a valid slice */
-		bool isValid() {return this->valid;}
+		bool isValid() const {return this->valid;}
 		
 		/** Array dereference operator */
-		T & operator[](unsigned index) {
+		T & operator[](unsigned index) const {
 			return this->array[index];}
 };
 

@@ -26,8 +26,6 @@ class LEDPin {
 		LEDPin(Slice<Color> leds, unsigned pin);
 		// No destructor needed as this class is memory safe
 		
-		void writeByte(unsigned char byte) const;
-		
 		/** Writes the LED data on the specified digital pin */
 		bool display() const;
 		

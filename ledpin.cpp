@@ -31,7 +31,7 @@ bool LEDPin::display() const {
 		);
 	}
 	
-	writeMultiplex(bytes, this->leds.length() * 3, this->pin);
+	write(bytes, this->leds.length() * 3, this->pin);
 	
 	delete[] bytes;
 }

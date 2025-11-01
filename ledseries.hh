@@ -32,7 +32,7 @@ class LEDSeries {
 		bool updateLED(Color newColor, unsigned index);
 		
 		/** Updates the LEDs in this object to the */
-		bool update(const Slice<Color> & newLEDs);
+		bool update(Slice<Color> & newLEDs);
 };
 
 } // end namespace FastRGB
