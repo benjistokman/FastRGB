@@ -6,7 +6,7 @@ Compatible with Arduino uno and nano boards, revisions 1 through 4.
 
 ## Example
 
-```c++
+```cpp
 #include <FastRGB.h>
 
 // Logic LED strip
@@ -19,8 +19,10 @@ FastRGB::Effect * effect;
 void setup() {
 	// Set up series of ten LEDs
 	series = new FastRGB::LEDSeries(10);
-	// Set up all 10 LEDs to output on pin 8
-	outputPin = new FastRGB::LEDPin(series->getLEDs(0, 10), 8);
+	// Set up to output on pin 8
+	outputPin = new FastRGB::LEDPin(8);
+	// Output all LEDs on the aformentioned output pin
+	outputPin->add(series->getLEDs());
 	// Set up rainbow effect
 	// Increments by 1 hue per tick, & 3 per LED in the strip
 	effect = new FastRGB::EffectRainbow(1, 3);

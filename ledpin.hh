@@ -4,13 +4,15 @@
 #include "ledseries.hh"
 #include "slice/slice.hh"
 
+#include <LittleVector.h>
+
 namespace FastRGB {
 
 /** Stores a Slice of Colors to write to a digital pin */
 class LEDPin {
 	private:
 		/** Stores the colors in this ledpin */
-		Slice<Color> leds;
+		LittleVector<Slice<Color>> leds;
 		/** What pin to output on */
 		unsigned pin;
 		
@@ -23,12 +25,14 @@ class LEDPin {
 		
 	public:
 		/** Constructor to initialize the pin */
-		LEDPin(Slice<Color> leds, unsigned pin);
+		LEDPin(unsigned pin);
 		// No destructor needed as this class is memory safe
+		
+		/** Adds a slice of Colors to output on this pin */
+		add(Slice<Color> leds);
 		
 		/** Writes the LED data on the specified digital pin */
 		bool display() const;
-		
 		
 		/** Adjustment for red channel */
 		void setAdjustmentR(unsigned char adjustmentR) {

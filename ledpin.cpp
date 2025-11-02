@@ -4,34 +4,47 @@
 
 namespace FastRGB {
 
-LEDPin::LEDPin(Slice<Color> leds, unsigned pin) {
-	this->leds = leds;
+LEDPin::LEDPin(unsigned pin) {
 	this->pin = pin;
 	pinMode(pin, OUTPUT);
 }
 
+LEDPin::add(Slice<Color> newSlice) {
+	this->leds.push_back(newSlice);
+}
+
 bool LEDPin::display() const {
-	unsigned char * bytes = new unsigned char[this->leds.length() * 3];
+	unsigned bytesLength = 0;
+	for (Slice<Color> colorSlice : this->leds) {
+		bytesLength += colorSlice.length();
+	}
+	bytesLength *= 3;
 	
-	for (unsigned i = 0; i < this->leds.length(); i ++) {
-		bytes[i*3+0] = (unsigned char)(
-			float(this->leds[i].green)
-			* float(this->adjustmentG)
-			/ 255.0f
-		);
-		bytes[i*3+1] = (unsigned char)(
-			float(this->leds[i].red)
-			* float(this->adjustmentR)
-			/ 255.0f
-		);
-		bytes[i*3+2] = (unsigned char)(
-			float(this->leds[i].blue)
-			* float(this->adjustmentB)
-			/ 255.0f
-		);
+	unsigned char * bytes = new unsigned char[bytesLength];
+	unsigned bytesIndex = 0;
+	
+	for (Slice<Color> colorSlice : this->leds) {
+		for (unsigned i = 0; i < colorSlice.length(); i ++) {
+			bytes[bytesIndex] = (unsigned char)(
+				float(colorSlice[i].green)
+				* float(this->adjustmentG)
+				/ 255.0f
+			);
+			bytes[bytesIndex+1] = (unsigned char)(
+				float(colorSlice[i].red)
+				* float(this->adjustmentR)
+				/ 255.0f
+			);
+			bytes[bytesIndex+2] = (unsigned char)(
+				float(colorSlice[i].blue)
+				* float(this->adjustmentB)
+				/ 255.0f
+			);
+			bytesIndex += 3;
+		}
 	}
 	
-	write(bytes, this->leds.length() * 3, this->pin);
+	write(bytes, bytesLength, this->pin);
 	
 	delete[] bytes;
 }
