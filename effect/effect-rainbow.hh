@@ -10,24 +10,21 @@ namespace FastRGB {
 class EffectRainbow : public Effect {
 	private:
 		/** hue from 0-255 */
-		unsigned char hue = 0;
+		float hue = 0;
 		/** ammount of increase hue for each tick */
-		unsigned char hueTickInc = 1;
+		float hueTickInc;
 		/** ammount of increase hue for each LED in the strip */
-		unsigned char hueLEDInc = 2;
+		float hueLEDInc;
 		
-		Color hslToRGB(unsigned char h, unsigned char s, unsigned char l) {
-			float sFloat = s / 255.0f;
-			float lFloat = l / 255.0f;
-			
+		Color hslToRGB(float h, float s, float l) {
 			// Chroma
-			float C = (1.0f - fabs(2.0f * lFloat - 1.0f)) * sFloat;
+			float C = (1.0f - fabs(2.0f * l - 1.0f)) * s;
 			// Hue prime
-			float hPrime = (h / 255.0f) * 6.0f;
+			float hPrime = h*h * 6.0f;
 			// Second component
 			float X = C * (1.0f - fabs(fmod(hPrime, 2.0f) - 1.0f));
-			// Match value"
-			float m = lFloat - C / 2.0f;
+			// Match value
+			float m = l - C / 2.0f;
 
 			// Final RGB channels
 			float R = 0.0f, G = 0.0f, B = 0.0f;
@@ -49,16 +46,20 @@ class EffectRainbow : public Effect {
 		
 	public:
 		void next(Slice<Color> leds) {
-			unsigned char hueTemp = this->hue;
+			float hueTemp = this->hue;
 			for (int i = 0; i < leds.length(); i ++) {
-				leds[i] = this->hslToRGB(hueTemp, 255, 100);
+				leds[i] = this->hslToRGB(hueTemp, 1, 0.5);
 				hueTemp -= this->hueLEDInc;
+				if (hueTemp < 0) {hueTemp += 1;}
 			}
 		}
 		
-		void tick() {this->hue += this->hueTickInc;}
+		void tick() {
+			this->hue += this->hueTickInc;
+			if (this->hue > 1) {this->hue --;}
+		}
 		
-		EffectRainbow(unsigned char hueTickInc, unsigned char hueLEDInc) {
+		EffectRainbow(float hueTickInc, float hueLEDInc) {
 			this->hueTickInc = hueTickInc;
 			this->hueLEDInc = hueLEDInc;
 		}

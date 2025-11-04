@@ -102,27 +102,36 @@ bool write(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
 		uint8_t port = digitalPinToPort(pin);
 		volatile uint16_t * portx_p = portOutputRegister(port);
 		
-		noInterrupts();
 		for (unsigned i = 0; i < bytesLength; i ++) {
-			for (unsigned char bitMask = 0x80; bitMask > 0; bitMask = (bitMask >> 1)) {
-				if ((bytes[i] & bitMask) != 0) {
+			for (unsigned char bm = 0x80; bm > 0; bm = (bm >> 1)) {
+				if ((bytes[i] & bm) != 0) {
 					*portx_p |= mask;
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__(\
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+					);
 					*portx_p &= ~mask;
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__(
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t"
+					);
 				} else {
 					*portx_p |= mask;
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__(
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t"
+					);
 					*portx_p &= ~mask;
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-					__asm__ __volatile__("nop\n\t""nop\n\t""nop\n\t");
+					__asm__ __volatile__(\
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+						"nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t"
+					);
 				}
 			}
 		}
-		interrupts();
+		delayMicroseconds(20);
 	}
 #endif
 

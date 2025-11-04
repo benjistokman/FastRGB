@@ -18,8 +18,8 @@ class EffectPulsing : public Effect {
 		void next(Slice<Color> leds) {
 			Color currColor = this->color;
 			
-			float radians = float(this->thisTick) / 256 * 6.283185307;
-			float sine = (sin(radians) + 1) / 2.5 + 0.15;
+			float radians = float(this->thisTick) / 128 * 6.283185307;
+			float sine = (sin(radians) + 1) / 2.25 + (1/9);
 			
 			currColor.red = (unsigned char)(currColor.red * sine);
 			currColor.green = (unsigned char)(currColor.green * sine);

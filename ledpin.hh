@@ -4,7 +4,7 @@
 #include "ledseries.hh"
 #include "slice/slice.hh"
 
-#include <LittleVector.h>
+#include <vector>
 
 namespace FastRGB {
 
@@ -12,7 +12,7 @@ namespace FastRGB {
 class LEDPin {
 	private:
 		/** Stores the colors in this ledpin */
-		LittleVector<Slice<Color>> leds;
+		std::vector<Slice<Color>> leds;
 		/** What pin to output on */
 		unsigned pin;
 		
@@ -29,10 +29,10 @@ class LEDPin {
 		// No destructor needed as this class is memory safe
 		
 		/** Adds a slice of Colors to output on this pin */
-		add(Slice<Color> leds);
+		void add(Slice<Color> leds);
 		
 		/** Writes the LED data on the specified digital pin */
-		bool display() const;
+		bool display();
 		
 		/** Adjustment for red channel */
 		void setAdjustmentR(unsigned char adjustmentR) {
