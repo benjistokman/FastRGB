@@ -4,15 +4,13 @@
 #include "ledseries.hh"
 #include "slice/slice.hh"
 
-#include <vector>
-
 namespace FastRGB {
 
 /** Stores a Slice of Colors to write to a digital pin */
 class LEDPin {
 	private:
 		/** Stores the colors in this ledpin */
-		std::vector<Slice<Color>> leds;
+		Slice<Slice<Color>> sections;
 		/** What pin to output on */
 		unsigned pin;
 		
@@ -25,11 +23,12 @@ class LEDPin {
 		
 	public:
 		/** Constructor to initialize the pin */
-		LEDPin(unsigned pin);
+		LEDPin(unsigned pin, unsigned numSections);
 		// No destructor needed as this class is memory safe
 		
-		/** Adds a slice of Colors to output on this pin */
-		void add(Slice<Color> leds);
+		/** Adds a slice of Colors to output on this pin
+			@return true on no error, false on error */
+		bool set(unsigned sectionNum, Slice<Color> leds);
 		
 		/** Writes the LED data on the specified digital pin */
 		bool display();

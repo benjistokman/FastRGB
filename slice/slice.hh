@@ -65,7 +65,8 @@ class Slice {
 		
 		/** Array dereference operator */
 		T & operator[](unsigned index) const {
-			return this->array[index];}
+			return this->array[index];
+		}
 };
 
 }
