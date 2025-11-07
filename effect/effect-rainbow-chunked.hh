@@ -54,6 +54,7 @@ class EffectRainbowChunked : public Effect {
 				// For each section (that's not the first)
 				if (i % this->chunkSize == 0 && i != 0) {
 					hueTemp -= this->hueChunkInc;
+					if (hueTemp < 0) {hueTemp += 1;}
 					chunkColor = this->hslToRGB(hueTemp, 1, 0.5);
 				}
 				
