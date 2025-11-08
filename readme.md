@@ -19,10 +19,10 @@ FastRGB::Effect * effect;
 void setup() {
 	// Set up series of ten LEDs
 	series = new FastRGB::LEDSeries(10);
-	// Set up to output on pin 8
-	outputPin = new FastRGB::LEDPin(8);
-	// Output all LEDs on the aformentioned output pin
-	outputPin->add(series->getLEDs());
+	// Set up to output on pin 8 with one logical segment
+	outputPin = new FastRGB::LEDPin(8, 1);
+	// Output all LEDs on the aforementioned output pin
+	outputPin->set(0, series->getLEDs()); // First section is index 0
 	// Set up rainbow effect
 	// Increments by 1 hue per tick, & 3 per LED in the strip
 	effect = new FastRGB::EffectRainbow(1, 3);
@@ -35,7 +35,7 @@ void loop() {
 	outputPin->display();
 	// tick() the effect
 	effect->tick();
-	// Delay by a resonable ammount
+	// Delay by a reasonable amount
 	delay(25);
 }
 ```
