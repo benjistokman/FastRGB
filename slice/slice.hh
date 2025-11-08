@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ArxSmartPtr.h>
-
 #include "slicearray.hh"
 
 namespace FastRGB {
@@ -11,7 +9,7 @@ template <typename T>
 class Slice {
 	private:
 		/** Smart pointer to heap data to mock memory managed evironment */
-		std::shared_ptr<SliceArray<T>> parentArray = nullptr;
+		SliceArray<T> parentArray;
 		/** Stores a pointer to the base of the slice */
 		T * array = nullptr;
 		/** Length of slice */
@@ -22,10 +20,8 @@ class Slice {
 	public:
 		/** Constructor which makes its own array */
 		Slice(unsigned arrayLength) {
-			this->parentArray = std::shared_ptr<SliceArray<T>>(
-				new SliceArray<T>(arrayLength)
-			);
-			this->array = parentArray.get()->data;
+			this->parentArray = SliceArray<T>(arrayLength);
+			this->array = parentArray.data;
 			this->arrayLength = arrayLength;
 			this->valid = true;
 		}
@@ -35,7 +31,7 @@ class Slice {
 		
 		/** Slice specifying all fields (used for copying) */
 		Slice(
-			std::shared_ptr<SliceArray<T>> parentArray,
+			SliceArray<T> parentArray,
 			T * array,
 			unsigned arrayLength,
 			bool valid

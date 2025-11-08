@@ -17,6 +17,7 @@ bool LEDPin::set(unsigned sectionNum, Slice<Color> slice) {
 
 bool LEDPin::display() {
 	noInterrupts();
+	
 	pinMode(this->pin, OUTPUT);
 	
 	unsigned bytesLength = 0;
@@ -51,6 +52,7 @@ bool LEDPin::display() {
 	write(bytes, bytesLength, this->pin);
 	
 	delete[] bytes;
+	
 	interrupts();
 }
 

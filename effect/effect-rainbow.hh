@@ -8,7 +8,7 @@ namespace FastRGB {
 
 /** Simple rainbow pattern */
 class EffectRainbow : public Effect {
-	private:
+	protected:
 		/** hue from 0-255 */
 		float hue = 0;
 		/** ammount of increase hue for each tick */
