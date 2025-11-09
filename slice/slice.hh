@@ -1,63 +1,108 @@
 #pragma once
 
-#include "slicearray.hh"
-
 namespace FastRGB {
 
 /** Class which slices up an Array in a memory-safe manner */
 template <typename T>
 class Slice {
 	private:
-		/** Smart pointer to heap data to mock memory managed evironment */
-		SliceArray<T> parentArray;
+		/** Pointer to start of heap array for memory safety purposes */
+		T * baseArray = nullptr;
+		/** Pointer to counter on heap for memory safety purposes */
+		unsigned * baseArrayRefCount = nullptr;
+		
 		/** Stores a pointer to the base of the slice */
 		T * array = nullptr;
 		/** Length of slice */
 		unsigned arrayLength = 0;
-		/** If this slice is valid */
-		bool valid = false;
 		
-	public:
-		/** Constructor which makes its own array */
-		Slice(unsigned arrayLength) {
-			this->parentArray = SliceArray<T>(arrayLength);
-			this->array = parentArray.data;
-			this->arrayLength = arrayLength;
-			this->valid = true;
+		/** Deletes the two heap items */
+		void deleteHeap() {
+			if (this->baseArray) {delete[] this->baseArray;}
+			if (this->baseArrayRefCount) {delete this->baseArrayRefCount;}
+		}
+		/** Increments this->dataRef */
+		void incRefCount() {
+			if (this->baseArrayRefCount) {(*this->baseArrayRefCount) ++;}
+		}
+		/** Decrements this->dataRef and deletes heap object if reference
+			counter == 0 */
+		void decRefCount() {
+			if (this->baseArrayRefCount) {(*this->baseArrayRefCount) --;}
+			else {return;}
+			if (*this->baseArrayRefCount == 0) {
+				this->deleteHeap();
+			}
 		}
 		
+	public:
 		/** Invalid */
 		Slice() {}
 		
+		/** Constructor which makes its own array */
+		Slice(unsigned arrayLength) {
+			this->baseArray = new T[arrayLength];
+			this->baseArrayRefCount = new unsigned(1);
+			this->array = this->baseArray;
+			this->arrayLength = arrayLength;
+		}
+		
 		/** Slice specifying all fields (used for copying) */
 		Slice(
-			SliceArray<T> parentArray,
+			T * baseArray,
+			unsigned * baseArrayRefCount,
 			T * array,
-			unsigned arrayLength,
-			bool valid
+			unsigned arrayLength
 		) {
-			this->parentArray = parentArray;
+			this->baseArray = baseArray;
+			this->baseArrayRefCount = baseArrayRefCount;
+			this->incRefCount();
 			this->array = array;
 			this->arrayLength = arrayLength;
-			this->valid = valid;
 		}
+		
+		/** Copy operator */
+		Slice(const Slice & r)
+		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
+		  array(r.array), arrayLength(r.arrayLength) {
+			// Just increment the copied counter
+			this->incRefCount();
+		}
+		
+		/** operator= */
+		Slice & operator=(const Slice & r) {
+			if (this == &r) {return *this;}
+			this->decRefCount();
+			
+			// Copy everything
+			this->baseArray = r.baseArray;
+			this->baseArrayRefCount = r.baseArrayRefCount;
+			this->array = r.array;
+			this->arrayLength = r.arrayLength;
+			// Copied counter
+			this->incRefCount();
+			
+			return *this;
+		}
+		
+		~Slice() {this->decRefCount();}
 		
 		/** Get slice of this array */
 		Slice<T> slice(unsigned start, unsigned length) const {
 			if (start + length > this->arrayLength) {return Slice();}
 			
 			return Slice(
-				this->parentArray,
+				this->baseArray,
+				this->baseArrayRefCount,
 				this->array + start,
-				length,
-				true
+				length
 			);
 		}
 		
 		/** Returns length of array */
 		unsigned length() const {return this->arrayLength;}
 		/** Returns if this slice object points to a valid slice */
-		bool isValid() const {return this->valid;}
+		bool isValid() const {return (this->array != nullptr);}
 		
 		/** Array dereference operator */
 		T & operator[](unsigned index) const {
