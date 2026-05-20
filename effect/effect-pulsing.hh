@@ -17,7 +17,7 @@ class EffectPulsing : public Effect {
 		float low = 0;
 		/* High end of the currSine wave, must be [0,1] */
 		float high = 1;
-		/* Sequential color writes, negative is ∞ */
+		/* Sequential color writes, 0 is ∞ */
 		unsigned numDuplicates;
 		
 	public:

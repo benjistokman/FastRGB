@@ -7,7 +7,7 @@ namespace FastRGB {
 /* Simple rainbow pattern */
 class EffectRainbow : public Effect {
 	protected:
-		/* hue from 0-255 */
+		/* hue from 0-1 */
 		float hue = 0;
 		/* ammount of increase hue for each tick */
 		float hueTickInc;
@@ -54,8 +54,7 @@ class EffectRainbow : public Effect {
 			/* How many Color objects to write a unique color to before
 			   incrementing theta by thetaColor. Useful for making groups of
 			   LEDs the same color.
-			   @param 0 and 1 are considered the same thing
-			   @param -e is interpreted as ∞ */
+			   @param 0 is interpreted as ∞ */
 			unsigned numDuplicates
 		) {
 			this->hueTickInc = hueTickInc;
@@ -78,6 +77,7 @@ class EffectRainbow : public Effect {
 					// Update currSine and reset
 					if (duplicate >= this->numDuplicates) {
 						currHue += this->hueColorInc;
+						if (currHue > 1) {currHue -= 1;}
 						duplicate = 0;
 					}
 				}
