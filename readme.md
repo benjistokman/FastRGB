@@ -24,13 +24,14 @@ void setup() {
 	// Output all LEDs on the aforementioned output pin
 	outputPin->set(0, series->getLEDs()); // First section is index 0
 	// Set up rainbow effect
-	// Increments by 1 hue per tick, & 3 per LED in the strip
-	effect = new FastRGB::EffectRainbow(1, 3);
+	// Increments by 1 hue per tick, 3 per LED in the strip, and makes a new
+	// color per LED
+	effect = new FastRGB::EffectRainbow(1, 3, 1);
 }
 
 void loop() {
 	// Apply effect to LED series
-	effect->next(series->getLEDs());
+	effect->apply(series->getLEDs());
 	// Trigger display on pin
 	outputPin->display();
 	// tick() the effect

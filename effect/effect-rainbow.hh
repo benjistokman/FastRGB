@@ -1,20 +1,20 @@
 #pragma once
 
-#include <ArxSmartPtr.h>
-
 #include "effect.hh"
 
 namespace FastRGB {
 
-/** Simple rainbow pattern */
+/* Simple rainbow pattern */
 class EffectRainbow : public Effect {
 	protected:
-		/** hue from 0-255 */
+		/* hue from 0-255 */
 		float hue = 0;
-		/** ammount of increase hue for each tick */
+		/* ammount of increase hue for each tick */
 		float hueTickInc;
-		/** ammount of increase hue for each LED in the strip */
-		float hueLEDInc;
+		/* ammount of increase hue for each LED in the strip */
+		float hueColorInc;
+		/* Sequential color writes, 0 is ∞ */
+		unsigned numDuplicates;
 		
 		Color hslToRGB(float h, float s, float l) {
 			// Chroma
@@ -45,23 +45,48 @@ class EffectRainbow : public Effect {
 		}
 		
 	public:
-		void next(Slice<Color> leds) {
-			float hueTemp = this->hue;
+	
+		EffectRainbow(
+			/* How much to increment the hue [0, 255] per tick() */
+			float hueTickInc,
+			/* How much to increment the hue per unique color */
+			float hueColorInc,
+			/* How many Color objects to write a unique color to before
+			   incrementing theta by thetaColor. Useful for making groups of
+			   LEDs the same color.
+			   @param 0 and 1 are considered the same thing
+			   @param -e is interpreted as ∞ */
+			unsigned numDuplicates
+		) {
+			this->hueTickInc = hueTickInc;
+			this->hueColorInc = hueColorInc;
+			this->numDuplicates = numDuplicates;
+		}
+		
+		void apply(Slice<Color> leds) {
+			float currHue = this->hue;
+			int duplicate = 0;
+			
 			for (int i = 0; i < leds.length(); i ++) {
-				leds[i] = this->hslToRGB(hueTemp, 1, 0.5);
-				hueTemp -= this->hueLEDInc;
-				if (hueTemp < 0) {hueTemp += 1;}
+				// Update color
+				leds[i] = this->hslToRGB(currHue, 1, 0.5);
+				
+				// currSine will only ever update if numDuplicates is 1 or more
+				if (this->numDuplicates > 0) {
+					// Update it
+					duplicate ++;
+					// Update currSine and reset
+					if (duplicate >= this->numDuplicates) {
+						currHue += this->hueColorInc;
+						duplicate = 0;
+					}
+				}
 			}
 		}
 		
 		void tick() {
 			this->hue += this->hueTickInc;
 			if (this->hue > 1) {this->hue --;}
-		}
-		
-		EffectRainbow(float hueTickInc, float hueLEDInc) {
-			this->hueTickInc = hueTickInc;
-			this->hueLEDInc = hueLEDInc;
 		}
 };
 

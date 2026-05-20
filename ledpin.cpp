@@ -30,21 +30,31 @@ bool LEDPin::display() {
 	unsigned bytesIndex = 0;
 	for (int i = 0; i < this->sections.length(); i ++) {
 		for (unsigned j = 0; j < this->sections[i].length(); j ++) {
-			bytes[bytesIndex] = (unsigned char)(
-				float(this->sections[i][j].green)
-				* float(this->adjustmentG)
-				/ 255.0f
-			);
-			bytes[bytesIndex+1] = (unsigned char)(
-				float(this->sections[i][j].red)
-				* float(this->adjustmentR)
-				/ 255.0f
-			);
-			bytes[bytesIndex+2] = (unsigned char)(
-				float(this->sections[i][j].blue)
-				* float(this->adjustmentB)
-				/ 255.0f
-			);
+			// If disabled, output 0
+			if (this->isTurnedOff) {
+				bytes[bytesIndex] = 0;
+				bytes[bytesIndex+1] = 0;
+				bytes[bytesIndex+2] = 0;
+			}
+			// Otherwise output color with adjustment
+			else {
+				bytes[bytesIndex] = (unsigned char)(
+					float(this->sections[i][j].green)
+					* float(this->adjustmentG)
+					/ 255.0f
+				);
+				bytes[bytesIndex+1] = (unsigned char)(
+					float(this->sections[i][j].red)
+					* float(this->adjustmentR)
+					/ 255.0f
+				);
+				bytes[bytesIndex+2] = (unsigned char)(
+					float(this->sections[i][j].blue)
+					* float(this->adjustmentB)
+					/ 255.0f
+				);
+			}
+			
 			bytesIndex += 3;
 		}
 	}

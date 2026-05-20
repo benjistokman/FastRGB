@@ -2,30 +2,30 @@
 
 namespace FastRGB {
 
-/** Class which slices up an Array in a memory-safe manner */
+/* Class which slices up an Array in a memory-safe manner */
 template <typename T>
 class Slice {
 	private:
-		/** Pointer to start of heap array for memory safety purposes */
+		/* Pointer to start of heap array for memory safety purposes */
 		T * baseArray = nullptr;
-		/** Pointer to counter on heap for memory safety purposes */
+		/* Pointer to counter on heap for memory safety purposes */
 		unsigned * baseArrayRefCount = nullptr;
 		
-		/** Stores a pointer to the base of the slice */
+		/* Stores a pointer to the base of the slice */
 		T * array = nullptr;
-		/** Length of slice */
+		/* Length of slice */
 		unsigned arrayLength = 0;
 		
-		/** Deletes the two heap items */
+		/* Deletes the two heap items */
 		void deleteHeap() {
 			if (this->baseArray) {delete[] this->baseArray;}
 			if (this->baseArrayRefCount) {delete this->baseArrayRefCount;}
 		}
-		/** Increments this->dataRef */
+		/* Increments this->dataRef */
 		void incRefCount() {
 			if (this->baseArrayRefCount) {(*this->baseArrayRefCount) ++;}
 		}
-		/** Decrements this->dataRef and deletes heap object if reference
+		/* Decrements this->dataRef and deletes heap object if reference
 			counter == 0 */
 		void decRefCount() {
 			if (this->baseArrayRefCount) {(*this->baseArrayRefCount) --;}
@@ -36,10 +36,10 @@ class Slice {
 		}
 		
 	public:
-		/** Invalid */
+		/* Invalid */
 		Slice() {}
 		
-		/** Constructor which makes its own array */
+		/* Constructor which makes its own array */
 		Slice(unsigned arrayLength) {
 			this->baseArray = new T[arrayLength];
 			this->baseArrayRefCount = new unsigned(1);
@@ -47,7 +47,7 @@ class Slice {
 			this->arrayLength = arrayLength;
 		}
 		
-		/** Slice specifying all fields (used for copying) */
+		/* Slice specifying all fields (used for copying) */
 		Slice(
 			T * baseArray,
 			unsigned * baseArrayRefCount,
@@ -61,7 +61,7 @@ class Slice {
 			this->arrayLength = arrayLength;
 		}
 		
-		/** Copy operator */
+		/* Copy operator */
 		Slice(const Slice & r)
 		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
 		  array(r.array), arrayLength(r.arrayLength) {
@@ -69,7 +69,7 @@ class Slice {
 			this->incRefCount();
 		}
 		
-		/** operator= */
+		/* operator= */
 		Slice & operator=(const Slice & r) {
 			if (this == &r) {return *this;}
 			this->decRefCount();
@@ -87,7 +87,7 @@ class Slice {
 		
 		~Slice() {this->decRefCount();}
 		
-		/** Get slice of this array */
+		/* Get slice of this array */
 		Slice<T> slice(unsigned start, unsigned length) const {
 			if (start + length > this->arrayLength) {return Slice();}
 			
@@ -99,12 +99,12 @@ class Slice {
 			);
 		}
 		
-		/** Returns length of array */
+		/* Returns length of array */
 		unsigned length() const {return this->arrayLength;}
-		/** Returns if this slice object points to a valid slice */
+		/* Returns if this slice object points to a valid slice */
 		bool isValid() const {return (this->array != nullptr);}
 		
-		/** Array dereference operator */
+		/* Array dereference operator */
 		T & operator[](unsigned index) const {
 			return this->array[index];
 		}
