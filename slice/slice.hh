@@ -71,18 +71,20 @@ class Slice {
 			this->incRefCount();
 		}
 		
+		/* Move operator */
+		Slice(const Slice && r)
+		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
+		  array(r.array), arrayLength(r.arrayLength) {}
+		
 		/* operator= */
 		Slice & operator=(const Slice & r) {
 			if (this == &r) {return *this;}
-			this->decRefCount();
 			
 			// Copy everything
 			this->baseArray = r.baseArray;
 			this->baseArrayRefCount = r.baseArrayRefCount;
 			this->array = r.array;
 			this->arrayLength = r.arrayLength;
-			// Copied counter
-			this->incRefCount();
 			
 			return *this;
 		}
