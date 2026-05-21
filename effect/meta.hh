@@ -1,3 +1,5 @@
+// This file is used to import all effects into FastRGB.h
+
 #include "effect.hh"
 
 #include "effect-off.hh"

@@ -1,6 +1,5 @@
 #include "ledpin.hh"
 #include "write.hh"
-#include <Arduino.h>
 
 namespace FastRGB {
 

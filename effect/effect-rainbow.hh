@@ -9,9 +9,9 @@ class EffectRainbow : public Effect {
 	protected:
 		/* hue from 0-1 */
 		float hue = 0;
-		/* ammount of increase hue for each tick */
+		/* amount of increase hue for each tick */
 		float hueTickInc;
-		/* ammount of increase hue for each LED in the strip */
+		/* amount of increase hue for each LED in the strip */
 		float hueColorInc;
 		/* Sequential color writes, 0 is ∞ */
 		unsigned numDuplicates;
@@ -45,7 +45,9 @@ class EffectRainbow : public Effect {
 		}
 		
 	public:
-	
+		
+		/* Writes Colors in a spectrum of the HSL hue, with saturation at 100%
+		   and luminance at 50% */
 		EffectRainbow(
 			/* How much to increment the hue [0, 255] per tick() */
 			float hueTickInc,

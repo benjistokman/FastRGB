@@ -9,20 +9,22 @@ Compatible with Arduino uno and nano boards, revisions 1 through 4.
 ```cpp
 #include <FastRGB.h>
 
-// Logic LED strip
+// Set of Colors to write out to a pin
 FastRGB::LEDSeries * series;
+// Effect to apply to the series
+FastRGB::Effect * effect;
 // What pin to output on
 FastRGB::LEDPin * outputPin;
-// Effect
-FastRGB::Effect * effect;
 
 void setup() {
 	// Set up series of ten LEDs
 	series = new FastRGB::LEDSeries(10);
-	// Set up to output on pin 8 with one logical segment
+	
+	// Output on pin 8 with one logical segment
 	outputPin = new FastRGB::LEDPin(8, 1);
 	// Output all LEDs on the aforementioned output pin
 	outputPin->set(0, series->getLEDs()); // First section is index 0
+	
 	// Set up rainbow effect
 	// Increments by 1 hue per tick, 3 per LED in the strip, and makes a new
 	// color per LED

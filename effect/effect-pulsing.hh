@@ -45,9 +45,9 @@ class EffectPulsing : public Effect {
 			unsigned numDuplicates
 		) {
 			this->thetaTick = thetaTick;
+			this->thetaColor = thetaColor;
 			if (0 < low < 1) {this->low = low;}
 			if (0 < high < 1) {this->high = low;}
-			this->high = high;
 			this->numDuplicates = numDuplicates;
 		}
 		

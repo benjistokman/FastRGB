@@ -2,7 +2,9 @@
 
 namespace FastRGB {
 
-/* Class which slices up an Array in a memory-safe manner */
+/* Class which slices up an Array in a memory-safe manner
+   @NOTE there is no bounds checking on operator[] as the AVR architecture does
+		 not allow C++ exceptions */
 template <typename T>
 class Slice {
 	private:

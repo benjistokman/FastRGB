@@ -5,6 +5,7 @@
 
 namespace FastRGB {
 
+/* Parent class with virtual methods each effect must implement */
 class Effect {
 	public:
 		/* Updates the data in the Slice of Color objects */
