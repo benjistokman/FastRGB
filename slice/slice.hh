@@ -63,8 +63,9 @@ class Slice {
 			this->arrayLength = arrayLength;
 		}
 		
-		/* Copy operator */
+		/* Copy constructor */
 		Slice(const Slice & r)
+		// Identical behavior to operator=
 		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
 		  array(r.array), arrayLength(r.arrayLength) {
 			// Just increment the copied counter
@@ -74,7 +75,6 @@ class Slice {
 		/* operator= */
 		Slice & operator=(const Slice & r) {
 			if (this == &r) {return *this;}
-			this->decRefCount();
 			
 			// Copy everything
 			this->baseArray = r.baseArray;
@@ -86,6 +86,8 @@ class Slice {
 			
 			return *this;
 		}
+		
+		/* Move operators are all fine in their default state */
 		
 		~Slice() {this->decRefCount();}
 		
