@@ -30,18 +30,18 @@ class Slice {
 		/* Decrements this->dataRef and deletes heap object if reference
 			counter == 0 */
 		void decRefCount() {
-			if (this->baseArrayRefCount) {(*this->baseArrayRefCount) --;}
-			else {return;}
-			if (*this->baseArrayRefCount == 0) {
-				this->deleteHeap();
-			}
+			if (!this->baseArrayRefCount || (*this->baseArrayRefCount) == 0)
+			{return;}
+			
+			(*this->baseArrayRefCount) --;
+			if (*this->baseArrayRefCount == 0) {this->deleteHeap();}
 		}
 		
 	public:
 		/* Invalid */
 		Slice() {}
 		
-		/* Constructor which makes its own array */
+		/* Constructor which makes a new array */
 		Slice(unsigned arrayLength) {
 			this->baseArray = new T[arrayLength];
 			this->baseArrayRefCount = new unsigned(1);
@@ -63,8 +63,11 @@ class Slice {
 			this->arrayLength = arrayLength;
 		}
 		
-		/* Copy constructor */
-		Slice(const Slice & r)
+		/* 1. Destructor */
+		~Slice() noexcept {this->decRefCount();}
+		
+		/* 2. Copy Constructor */
+		Slice(const Slice & r) noexcept
 		// Identical behavior to operator=
 		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
 		  array(r.array), arrayLength(r.arrayLength) {
@@ -72,9 +75,12 @@ class Slice {
 			this->incRefCount();
 		}
 		
-		/* operator= */
-		Slice & operator=(const Slice & r) {
+		/* 3. Copy Assignment Operator */
+		Slice & operator=(const Slice & r) noexcept {
 			if (this == &r) {return *this;}
+			
+			// Decrement current reference counter
+			this->decRefCount();
 			
 			// Copy everything
 			this->baseArray = r.baseArray;
@@ -86,10 +92,42 @@ class Slice {
 			
 			return *this;
 		}
+	
+		/* 4. Move Constructor */
+		Slice(Slice&& r) noexcept
+		// Identical behavior to operator=
+		: baseArray(r.baseArray), baseArrayRefCount(r.baseArrayRefCount),
+		  array(r.array), arrayLength(r.arrayLength) {
+				// Nullify the r object
+	  			r.baseArrayRefCount = nullptr;
+	  			r.baseArray = nullptr;
+	  			r.array = nullptr;
+	  			r.arrayLength = 0;
+		  }
 		
-		/* Move operators are all fine in their default state */
-		
-		~Slice() {this->decRefCount();}
+		/* 5. Move assignment operator */
+		Slice& operator=(Slice&& r) noexcept {
+			if (this == &r) {return *this;}
+			
+			// Decrement current reference counter
+			this->decRefCount();
+			
+			// Copy everything
+			this->baseArray = r.baseArray;
+			this->baseArrayRefCount = r.baseArrayRefCount;
+			this->array = r.array;
+			this->arrayLength = r.arrayLength;
+			// Copied counter
+			this->incRefCount();
+			
+			// Nullify the r object
+			r.baseArrayRefCount = nullptr;
+			r.baseArray = nullptr;
+			r.array = nullptr;
+			r.arrayLength = 0;
+			
+			return *this;
+		}
 		
 		/* Get slice of this array */
 		Slice<T> slice(unsigned start, unsigned length) const {
