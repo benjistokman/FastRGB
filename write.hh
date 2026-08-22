@@ -133,6 +133,9 @@ bool write(unsigned char * bytes, unsigned bytesLength, unsigned pin) {
 		}
 		delayMicroseconds(20);
 	}
+#else
+#error FastRGB does not support your board! See readme.md for this library for supported architectures.
+
 #endif
 
 } // end namespace FastRGB
